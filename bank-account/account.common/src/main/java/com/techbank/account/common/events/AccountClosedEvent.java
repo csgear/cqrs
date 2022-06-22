@@ -4,7 +4,10 @@ import com.techbank.cqrs.core.events.BaseEvent;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * @author csgear
+ */
 @Data
 @SuperBuilder
-public class AccountCloseEvent extends BaseEvent {
+public class AccountClosedEvent extends BaseEvent {
 }

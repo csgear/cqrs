@@ -7,7 +7,7 @@ services:
     ports:
       - "2181:2181"
     volumes:
-      - "~/dockers/zookeeper_data:/bitnami"
+      - "/opt/data/zookeeper_data:/bitnami"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
@@ -17,7 +17,7 @@ services:
       - "9092:9092"
     restart: always
     volumes:
-      - "~/dockers/kafka_data:/bitnami"
+      - "/opt/data/kafka_data:/bitnami"
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -30,6 +30,8 @@ services:
     image: mysql:5.7
     ports:
       - "3306:3306"
+    volumes:
+      - "/opt/data/mysql:/var/lib/mysql"
     environment:
       - MYSQL_ROOT_PASSWORD=r00tr00t
       - MYSQL_USER=mysql
@@ -40,6 +42,8 @@ services:
       image: mongo:5.0
       ports:
         - "27017:27017"
+      volumes:
+        - "/opt/data/mongodb:/data/db"
       environment:
         - MONGO_INITDB_ROOT_USERNAME=root
         - MONGO_INITDB_ROOT_PASSWORD=r00tr00t

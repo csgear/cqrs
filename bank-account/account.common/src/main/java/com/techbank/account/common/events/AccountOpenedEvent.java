@@ -9,13 +9,16 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
+/**
+ * @author csgear
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class AccountOpenEvent extends BaseEvent {
+public class AccountOpenedEvent extends BaseEvent {
     private String accountHolder ;
     private AccountType accountType ;
-    private Date createDate ;
+    private Date createdDate ;
     private double openingBalance ;
 }
