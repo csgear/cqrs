@@ -1,18 +1,31 @@
 version: "3.9"
 
+
+networks:
+  vkeonline-network:
+    driver: bridge
+
 services:
   zookeeper:
     image: bitnami/zookeeper
+    container_name: zookeeper
     restart: always
+    networks:
+      - vkeonline-network
     ports:
       - "2181:2181"
     volumes:
       - "/opt/data/zookeeper_data:/bitnami"
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_ENABLE_AUTH=yes
+      - ZOO_SERVER_USERS=kafka
+      - ZOO_SERVER_PASSWORDS=kafka_password
 
   kafka:
     image: bitnami/kafka
+    container_name: kafka1
+    networks:
+      - vkeonline-network
     ports:
       - "9092:9092"
     restart: always
@@ -23,11 +36,16 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_LISTENERS=PLAINTEXT://:9092
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ZOOKEEPER_USER=kafka
+      - KAFKA_ZOOKEEPER_PASSWORD=kafka_password
     depends_on:
       - zookeeper
 
   mysql:
     image: mysql:5.7
+    container_name: mysql57
+    networks:
+      - vkeonline-network
     ports:
       - "3306:3306"
     volumes:
@@ -39,12 +57,27 @@ services:
       - MYSQL_DATABASE=bankAccount
     
   mongodb:
-      image: mongo:5.0
-      ports:
-        - "27017:27017"
-      volumes:
-        - "/opt/data/mongodb:/data/db"
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=root
-        - MONGO_INITDB_ROOT_PASSWORD=r00tr00t
+    image: mongo:5.0
+    container_name: mongo5
+    networks:
+      - vkeonline-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - "/opt/data/mongodb:/data/db"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=r00tr00t
 
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    container_name: postgres14
+    networks:
+      - vkeonline-network
+    ports:
+      - "5432:5432"
+    volumes:
+      - "/opt/data/postgres:/var/lib/postgresql/data/pgdata"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata 
