@@ -3,9 +3,48 @@ version: "3.9"
 
 networks:
   vkeonline-network:
+    name: vkeonline-network
     driver: bridge
 
+volumes:
+  es_data:
+    name: es_data
+    driver: local
+  mysql:
+    name: mysql
+    driver: local
+  mongodb:
+    name: mysql
+    driver: local
+
 services:
+  elasticsearch:
+    image: elasticsearch:8.2.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+      # - ELASTIC_PASSWORD=elastic
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - target: 9200
+        published: 9200
+    networks:
+      - vkeonline-network
+
+  kibana:
+    image: kibana:8.2.2
+    container_name: kibana
+    ports:
+      - target: 5601
+        published: 5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - vkeonline-network      
+
   zookeeper:
     image: bitnami/zookeeper
     container_name: zookeeper
@@ -49,7 +88,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "/opt/data/mysql:/var/lib/mysql"
+      - mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=r00tr00t
       - MYSQL_USER=mysql
@@ -64,7 +103,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - "/opt/data/mongodb:/data/db"
+      - mongodb:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=r00tr00t
